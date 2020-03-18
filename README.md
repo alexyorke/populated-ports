@@ -3,6 +3,8 @@ Warns if two applications are using the same port (e.g. Docker and Visual Studio
 
 This application solves the problem of accidently running two copies of an app, and running one but not the other. For example, starting a Docker image of an Angular app, and then also running it in Visual Studio Code and wondering why changing the code isn't changing anything; the Docker image started first so it takes priority (and vice-versa.)
 
+It will beep three times to get your attention.
+
 Sample output:
 
 ```
