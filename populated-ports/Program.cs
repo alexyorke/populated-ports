@@ -20,7 +20,7 @@ namespace populated_ports
         {
             while (true)
             {
-                //Console.Clear();
+                Console.Clear();
                 Console.WriteLine("Listening for overlapping ports on ports " + string.Join(", ", populatedPorts) + "...");
                 CheckForPopulatedPorts(populatedPorts);
                 Task.Delay(TimeSpan.FromSeconds(1)).Wait();
