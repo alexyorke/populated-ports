@@ -23,3 +23,23 @@ Closing processes...
 ```
 
 Docker containers will be gracefully stopped, and then aborted after seven seconds if they are still not stopped. Only the docker containers which use the ports specified will be terminated. User-space applications will be gracefully stopped, and then forcefully stopped after five seconds if they have not stopped.
+
+## Roadmap
+
+This app is relatively new, so watch out for bugs. Feel free to make a PR or issue for any feature requests or bugs that you find.
+
+Here's what I would like to support in the future:
+
+- linux compatibility (currently `populated-ports` is configured to use Windows's Docker socket port)
+
+- macOS compatibility
+
+- better UI/integration (i.e. a balloon notification instead of a terminal; ability to manage multiple processes at once)
+
+- ability to gracefully terminate console applications (e.g. via a `Ctrl+C` event) instead of issuing them a window close notification, which doesn't do anything
+
+- if possible, ability to switch apps between the in-use port (i.e. Docker and Visual Studio are using port `5000`; I want to click a button to make Docker use it, then click another one to make Visual Studio use it without shutting down the apps.)
+
+- better integration with editors (i.e. Visual Studio Code would show a message when starting an app which uses the same port as another one and I could close the app there natively with a popup.)
+
+- ability to give priority to other processes (e.g. when Docker starts, quit Visual Studio's process if the ports overlap)
