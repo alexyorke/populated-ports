@@ -1,9 +1,9 @@
 # populated-ports
 Warns if two applications are using the same port (e.g. Docker and Visual Studio Code.) A simple console application that beeps when two or more ports are in use. Ports can be configured by editing the source code.
 
-This application solves the problem of accidently running two copies of an app, and running one but not the other. For example, starting a Docker image of an Angular app, and then also running it in Visual Studio Code and wondering why changing the code isn't changing anything; the Docker image started first so it takes priority (and vice-versa.)
+This application solves the problem of accidently running two copies of an app, and running one but not the other. For example, starting a Docker image of an Angular app, and then also running it in Visual Studio Code and wondering why changing the code isn't changing anything; the Docker image started first so it takes priority (and vice-versa.) Some apps do not report a port conflict when starting, which is why this app can be useful.
 
-It will beep three times to get your attention.
+If a port conflict is found, it will beep three times to get your attention before asking you to resolve the conflict. If you do not resolve the conflict within `60` seconds, it will re-check if the conflict exists and then beep three times again.
 
 Sample output:
 
