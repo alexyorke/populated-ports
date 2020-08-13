@@ -13,7 +13,7 @@
         /// <param name="processId"></param>
         /// <param name="protocol"></param>
         /// <param name="portNumber"></param>
-        internal ProcessPort(string name, int processId, string protocol, int portNumber)
+        internal ProcessPort(string name, int processId, string protocol, uint portNumber)
         {
             this.Name = name;
             this.ProcessId = processId;
@@ -30,6 +30,6 @@
 
         public string Protocol { get; }
 
-        public int PortNumber { get; }
+        public uint PortNumber { get; }
     }
 }

@@ -10,7 +10,7 @@ namespace populated_ports
 {
     internal class Program
     {
-        private static readonly List<int> PopulatedPorts = new List<int>
+        private static readonly List<uint> PopulatedPorts = new List<uint>
         {
             4200,
             5000,
@@ -29,7 +29,7 @@ namespace populated_ports
             }
         }
 
-        private static void CheckForPopulatedPorts(ICollection<int> populatedPorts)
+        private static void CheckForPopulatedPorts(ICollection<uint> populatedPorts)
         {
             var processesTakingMoreThanOnePort = RunningProcesses.Ports
                 .Where(process => populatedPorts
@@ -68,7 +68,7 @@ namespace populated_ports
             }
         }
 
-        private static void QuitProcesses(IGrouping<int, ProcessPort> processesGroup, bool shouldQuitDocker = false)
+        private static void QuitProcesses(IGrouping<uint, ProcessPort> processesGroup, bool shouldQuitDocker = false)
         {
             foreach (var processToClose in from aProcess in processesGroup
                     .Where(process => !process.Name.Contains("com.docker.backend"))

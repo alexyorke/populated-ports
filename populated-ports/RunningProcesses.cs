@@ -68,7 +68,7 @@ namespace populated_ports
                                 ipAddress.Contains("1.1.1.1")
                                     ? $"{tokens[1]}v6"
                                     : $"{tokens[1]}v4",
-                                Convert.ToInt32(ipAddress.Split(':')[1])
+                                Convert.ToUInt32(ipAddress.Split(':')[1])
                             ));
                         }
                         catch
