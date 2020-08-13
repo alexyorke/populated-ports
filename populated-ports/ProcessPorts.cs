@@ -1,93 +1,90 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Text.RegularExpressions;
 
 namespace populated_ports
 {
     // https://github.com/2gis/Winium.Desktop/pull/71/commits/3118da30abcc703b1866487ca6c848277131459c
     /// <summary>
-    /// Static class that returns the list of processes and the ports those processes use.
+    ///     Static class that returns the list of processes and the ports those processes use.
     /// </summary>
     public static class ProcessPorts
     {
         /// <summary>
-        /// A list of ProcesesPorts that contain the mapping of processes and the ports that the process uses.
+        ///     A list of ProcesesPorts that contain the mapping of processes and the ports that the process uses.
         /// </summary>
-        public static List<ProcessPort> ProcessPortMap
-        {
-            get
-            {
-                return GetNetStatPorts();
-            }
-        }
+        public static List<ProcessPort> ProcessPortMap => GetNetStatPorts();
 
 
         /// <summary>
-        /// This method distills the output from netstat -a -n -o into a list of ProcessPorts that provide a mapping between
-        /// the process (name and id) and the ports that the process is using.
+        ///     This method distills the output from netstat -a -n -o into a list of ProcessPorts that provide a mapping between
+        ///     the process (name and id) and the ports that the process is using.
         /// </summary>
         /// <returns></returns>
         private static List<ProcessPort> GetNetStatPorts()
         {
-            List<ProcessPort> ProcessPorts = new List<ProcessPort>();
+            var processPorts = new List<ProcessPort>();
 
             try
             {
-                using Process Proc = new Process();
-                ProcessStartInfo StartInfo = new ProcessStartInfo();
-                StartInfo.FileName = "netstat.exe";
-                StartInfo.Arguments = "-a -n -o";
-                StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                StartInfo.UseShellExecute = false;
-                StartInfo.RedirectStandardInput = true;
-                StartInfo.RedirectStandardOutput = true;
-                StartInfo.RedirectStandardError = true;
+                using var proc = new Process();
+                var startInfo = new ProcessStartInfo();
+                startInfo.FileName = "netstat.exe";
+                startInfo.Arguments = "-a -n -o";
+                startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                startInfo.UseShellExecute = false;
+                startInfo.RedirectStandardInput = true;
+                startInfo.RedirectStandardOutput = true;
+                startInfo.RedirectStandardError = true;
 
-                Proc.StartInfo = StartInfo;
-                Proc.Start();
+                proc.StartInfo = startInfo;
+                proc.Start();
 
-                StreamReader StandardOutput = Proc.StandardOutput;
-                StreamReader StandardError = Proc.StandardError;
+                var standardOutput = proc.StandardOutput;
+                var standardError = proc.StandardError;
 
-                string NetStatContent = StandardOutput.ReadToEnd() + StandardError.ReadToEnd();
-                string NetStatExitStatus = Proc.ExitCode.ToString();
+                var netStatContent = standardOutput.ReadToEnd() + standardError.ReadToEnd();
+                var netStatExitStatus = proc.ExitCode.ToString();
 
-                if (NetStatExitStatus != "0")
-                {
+                if (netStatExitStatus != "0")
                     Console.WriteLine("NetStat command failed.   This may require elevated permissions.");
-                }
 
-                string[] NetStatRows = Regex.Split(NetStatContent, "\r\n");
+                var netStatRows = Regex.Split(netStatContent, "\r\n");
 
-                foreach (string NetStatRow in NetStatRows)
+                foreach (var netStatRow in netStatRows)
                 {
-                    string[] Tokens = Regex.Split(NetStatRow, "\\s+");
-                    if (Tokens.Length > 4 && (Tokens[1].Equals("UDP") || Tokens[1].Equals("TCP")))
+                    var tokens = Regex.Split(netStatRow, "\\s+");
+                    if (tokens.Length > 4 && (tokens[1].Equals("UDP") || tokens[1].Equals("TCP")))
                     {
-                        string IpAddress = Regex.Replace(Tokens[2], @"\[(.*?)\]", "1.1.1.1");
+                        var ipAddress = Regex.Replace(tokens[2], @"\[(.*?)\]", "1.1.1.1");
                         try
                         {
-                            ProcessPorts.Add(new ProcessPort(
-                                Tokens[1] == "UDP" ? GetProcessName(Convert.ToInt16(Tokens[4])) : GetProcessName(Convert.ToInt16(Tokens[5])),
-                                Tokens[1] == "UDP" ? Convert.ToInt16(Tokens[4]) : Convert.ToInt16(Tokens[5]),
-                                IpAddress.Contains("1.1.1.1") ? String.Format("{0}v6", Tokens[1]) : String.Format("{0}v4", Tokens[1]),
-                                Convert.ToInt32(IpAddress.Split(':')[1])
+                            processPorts.Add(new ProcessPort(
+                                tokens[1] == "UDP"
+                                    ? GetProcessName(Convert.ToInt16(tokens[4]))
+                                    : GetProcessName(Convert.ToInt16(tokens[5])),
+                                tokens[1] == "UDP" ? Convert.ToInt16(tokens[4]) : Convert.ToInt16(tokens[5]),
+                                ipAddress.Contains("1.1.1.1")
+                                    ? $"{tokens[1]}v6"
+                                    : $"{tokens[1]}v4",
+                                Convert.ToInt32(ipAddress.Split(':')[1])
                             ));
                         }
                         catch
                         {
-                            Console.WriteLine("Could not convert the following NetStat row to a Process to Port mapping.");
-                            Console.WriteLine(NetStatRow);
+                            Console.WriteLine(
+                                "Could not convert the following NetStat row to a Process to Port mapping.");
+                            Console.WriteLine(netStatRow);
                         }
                     }
                     else
                     {
-                        if (!NetStatRow.Trim().StartsWith("Proto") && !NetStatRow.Trim().StartsWith("Active") && !String.IsNullOrWhiteSpace(NetStatRow))
+                        if (!netStatRow.Trim().StartsWith("Proto") && !netStatRow.Trim().StartsWith("Active") &&
+                            !string.IsNullOrWhiteSpace(netStatRow))
                         {
                             Console.WriteLine("Unrecognized NetStat row to a Process to Port mapping.");
-                            Console.WriteLine(NetStatRow);
+                            Console.WriteLine(netStatRow);
                         }
                     }
                 }
@@ -96,23 +93,27 @@ namespace populated_ports
             {
                 Console.WriteLine(ex.Message);
             }
-            return ProcessPorts;
+
+            return processPorts;
         }
 
         /// <summary>
-        /// Private method that handles pulling the process name (if one exists) from the process id.
+        ///     Private method that handles pulling the process name (if one exists) from the process id.
         /// </summary>
-        /// <param name="ProcessId"></param>
+        /// <param name="processId"></param>
         /// <returns></returns>
-        private static string GetProcessName(int ProcessId)
+        private static string GetProcessName(int processId)
         {
-            string procName = "UNKNOWN";
+            var procName = "UNKNOWN";
 
             try
             {
-                procName = Process.GetProcessById(ProcessId).ProcessName;
+                procName = Process.GetProcessById(processId).ProcessName;
             }
-            catch { }
+            catch
+            {
+                // ignored
+            }
 
             return procName;
         }
