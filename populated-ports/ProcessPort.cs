@@ -9,22 +9,22 @@
         /// <summary>
         ///     Internal constructor to initialize the mapping of process to port.
         /// </summary>
-        /// <param name="processName">Name of process to be </param>
+        /// <param name="name">Name of process to be </param>
         /// <param name="processId"></param>
         /// <param name="protocol"></param>
         /// <param name="portNumber"></param>
-        internal ProcessPort(string processName, int processId, string protocol, int portNumber)
+        internal ProcessPort(string name, int processId, string protocol, int portNumber)
         {
-            this.ProcessName = processName;
+            this.Name = name;
             this.ProcessId = processId;
             this.Protocol = protocol;
             this.PortNumber = portNumber;
         }
 
         public string ProcessPortDescription =>
-            $"{ProcessName} ({Protocol} port {PortNumber} pid {ProcessId})";
+            $"{Name} ({Protocol} port {PortNumber} pid {ProcessId})";
 
-        public string ProcessName { get; }
+        public string Name { get; }
 
         public int ProcessId { get; }
 

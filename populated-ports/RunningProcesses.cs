@@ -9,12 +9,12 @@ namespace populated_ports
     /// <summary>
     ///     Static class that returns the list of processes and the ports those processes use.
     /// </summary>
-    public static class ProcessPorts
+    public static class RunningProcesses
     {
         /// <summary>
         ///     A list of ProcesesPorts that contain the mapping of processes and the ports that the process uses.
         /// </summary>
-        public static List<ProcessPort> ProcessPortMap => GetNetStatPorts();
+        public static List<ProcessPort> Ports => GetNetStatPorts();
 
 
         /// <summary>
